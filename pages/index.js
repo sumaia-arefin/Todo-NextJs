@@ -1,44 +1,48 @@
-import axios from "axios"
-import 
+import axios from 'axios';
+import dynamic from 'next/dynamic'
+import { motion } from 'framer-motion'
+import { useEffect, useState } from 'react'
+
+const CreateTask_Card = dynamic(
+  () => import('../components/CreateTask_Card'), { ssr: false }
+)
+const ShowTask = dynamic(
+  () => import('../components/ShowTask_Card'), { ssr: false }
+)
 
 export default function Home() {
-  function submitForm (event){
-    event.preventDefault()
-    const dataset={
-      Name:event.target.name.value,
-      schedule:event.target.schedule.value,
-      body:event.target.body.value,
-      date:event.target.date.value
-    }
-    axios.post("api/hello",dataset)
-    .then((data)=>console.log(data))
-    console.log(dataset)
-  }
-  return (
-    <>
-  
-  <div className="m-auto p-auto justify-center text-center w-32">
-      <form onSubmit={submitForm} className="flex flex-col">
-        <label htmlFor="name">Name</label>
-        <input className="md:w-full mb-2 drop-shadow-md bg-gray-200 border-2 border-gray-300 rounded w-4/5 py-2 px-2 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-blue-500 duration-300" type="text" id="name" name="name" />
+  const [ data, setData ] = useState([])
 
-        <label htmlFor="Schedule">Schedule</label>
-        <input className="md:w-full mb-2 drop-shadow-md bg-gray-200 border-2 border-gray-300 rounded w-4/5 py-2 px-2 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-blue-500 duration-300" type="text" id="Schedule" name="schedule" />
+  useEffect(()=>{
+    const res = axios.get('/api/get')
+    .then((res)=>{
+      setData(res.data)  
+      console.log(res.data)
+    })
+    console.log(data)
+},[])
+    return (
+        <center>
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 1 }}
+          >
+          <CreateTask_Card/>
+          </motion.div>
+          <div className="mx-10 grid grid-cols-4 grid-flow-row gap-4">
 
-        <label htmlFor="body">body</label>
-    
-        <input className="md:w-full mb-2 drop-shadow-md bg-gray-200 border-2 border-gray-300 rounded w-4/5 py-2 px-2 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-blue-500 duration-300" type="text" id="body" name="body" />
+            { data && data.map((item, index) => (
+            <ShowTask
+              key={index}
+              title= {item.Name}
+              body= {item.body}
+              schedule= {item.schedule}
+              date= {item.date}
+            />
+            ))}
 
-        <label htmlFor="date">date</label>
-        <input className="md:w-full mb-2 drop-shadow-md bg-gray-200 border-2 border-gray-300 rounded w-4/5 py-2 px-2 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-blue-500 duration-300" type="date" id="date" name="date" />
-
-        <button type="submit">Submit</button>
-
-      </form>
-    </div>
-  
-
-
-    </>
-  )
+          </div>
+        </center>
+    )
 }

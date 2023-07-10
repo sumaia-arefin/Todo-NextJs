@@ -1,0 +1,16 @@
+{
+    "extends": "next/core-web-vitals",
+    "rules": {
+      // Additional, per-project rules...
+      "import/order": [
+        "error",
+        {
+          "groups": ["builtin", "external", "internal", "parent", "sibling", "index"],
+          "newlines-between": "always",
+          "alphabetize": {
+            "caseInsensitive": true
+          }
+        }
+      ]
+    }
+}
